@@ -23,9 +23,9 @@ for i in range(num_packets):
     if is_malware:
         # MALWARE BEHAVIOR:
         # - Small packets (beaconing)
-        # - Exact 5.0 second intervals (The "Liquid" Signal)
-        current_time += timedelta(seconds=5.0)
-        size = 40 # Tiny keep-alive packet
+        # - ~5.0 second intervals (The "Liquid" Signal) with jitter
+        current_time += timedelta(seconds=np.random.normal(5.0, 0.5))
+        size = np.random.randint(30, 50) # Tiny keep-alive packet
         proto = 17 # UDP
         direction = 1 # Outbound
     else:

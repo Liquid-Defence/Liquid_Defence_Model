@@ -6,7 +6,6 @@ from sklearn.preprocessing import MinMaxScaler
 class TrafficPreprocessor:
     def __init__(self, seq_length=50):
         self.seq_length = seq_length
-        self.scaler = MinMaxScaler()
 
     def process_csv(self, filepath):
         # Load Raw Data
@@ -25,8 +24,8 @@ class TrafficPreprocessor:
         time_deltas = df[['time_delta']].values
         labels = df['is_malware'].values
         
-        # 4. Normalize (Scale to 0-1)
-        features = self.scaler.fit_transform(features)
+        # 4. We no longer Normalize here (Scale to 0-1) to avoid Train-Inference skew.
+        # It's now embedded in the PyTorch model.
         
         return self.create_sequences(features, time_deltas, labels)
 
