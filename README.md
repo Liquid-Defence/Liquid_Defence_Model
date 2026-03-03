@@ -113,42 +113,40 @@ This diagram details how the system avoids Java Virtual Machine (JVM) bottleneck
 
 ```mermaid
 graph TD
-    %% --- Styles ---
+    %% --- Styles (Bold Colors) ---
     classDef input fill:#90CAF9,stroke:#0D47A1,stroke-width:2px,color:#000;
     classDef process fill:#FFFFFF,stroke:#212121,stroke-width:2px,color:#000;
-    classDef native fill:#FFE082,stroke:#FF8F00,stroke-width:2px,color:#000;
+    classDef decision fill:#FFF59D,stroke:#F57F17,stroke-width:2px,stroke-dasharray: 5 5,color:#000;
     classDef storage fill:#CE93D8,stroke:#4A148C,stroke-width:2px,color:#000;
     classDef output fill:#EF9A9A,stroke:#B71C1C,stroke-width:2px,color:#000;
 
     %% --- SYSTEM FLOW ---
-    subgraph Client ["Android Device"]
-        UserApp[("Background Apps")]:::input
+    subgraph Client ["📱 Android Device - Client"]
+        UserApp[("User Apps\n(Instagram, WhatsApp, etc.)")]:::input
 
-        subgraph Interceptor ["Native Hardware Tap - C++"]
-            VPN["VpnService\nCreates Interface"]:::process
-            FD["Raw File Descriptor"]:::native
-            Sniffer["C++ Byte Sniffer\nExtracts Headers"]:::native
-            Valve["10ms Flow Control Valve\nUI Smoother"]:::native
+        subgraph Interceptor ["VpnService - Orchestration"]
+            VPN["VPN Interface\n(Captures Packets)"]:::process
+            Extractor["Feature Extractor\n(Size, Direction, Protocol)"]:::process
+            Clock["Time-Delta Calculator\n(The Physics Input)"]:::decision
         end
 
-        subgraph Brain ["AI Engine - Java ONNX"]
-            JNI_Bridge["processPacketFromNative"]:::process
-            Buffer["Rolling Tensor Buffer"]:::storage
-            LiquidModel["Liquid CfC Model"]:::process
+        subgraph Brain ["AI Engine - ONNX Runtime"]
+            Buffer["Rolling Buffer\n(50 Packets)"]:::storage
+            LiquidModel["Liquid CfC Model\n(.onnx file)"]:::process
         end
 
-        UI["Cinematic Live Dashboard"]:::output
+        UI["Dashboard & Alerts"]:::output
     end
 
     %% --- CONNECTIONS ---
     UserApp --> VPN
-    VPN -- "Hands off memory" --> FD
-    FD --> Sniffer
-    Sniffer --> Valve
-    Valve -- "JNI Call" --> JNI_Bridge
-    JNI_Bridge --> Buffer
+    VPN --> Extractor
+    VPN --> Clock
+    Extractor --> Buffer
+    Clock --> Buffer
     Buffer --> LiquidModel
-    LiquidModel -- "Real-time Score" --> UI
+    LiquidModel -- "Probability Score" --> UI
+    UI -- "Block Command" --> VPN
 ```
 
 ---
